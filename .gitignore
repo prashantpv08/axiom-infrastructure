@@ -1,0 +1,32 @@
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Terraform local working data and potentially secret-bearing output
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log
+crash.*.log
+
+# Local Terraform overrides and variable values
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+!*.tfvars.json.example
+.terraformrc
+terraform.rc
+
+# Credentials and local environment files
+*.pem
+*.key
+.env
+.env.*
+!.env.example
