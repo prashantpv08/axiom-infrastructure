@@ -23,10 +23,13 @@ Directories are created when their first reviewed configuration is implemented; 
 
 ## Local checks
 
+Use Terraform `1.15.8`, pinned in `.terraform-version`. A compatible version manager can install or select it without adding repository-local binaries.
+
 ```bash
 terraform fmt -check -recursive
 terraform validate
 ./scripts/check-repository.sh
+./scripts/check-workflow-actions.sh
 ```
 
 `terraform init` is not required until a real configuration is introduced. Never run `terraform apply` without explicit authorization and a reviewed plan.

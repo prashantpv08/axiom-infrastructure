@@ -1,0 +1,51 @@
+name: Infrastructure CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: infrastructure-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Repository policy and Terraform validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository without persisted credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Check immutable workflow dependencies
+        run: ./scripts/check-workflow-actions.sh
+
+      - name: Install the repository-pinned Terraform version
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.15.8
+          terraform_wrapper: false
+
+      - name: Check repository policy
+        run: ./scripts/check-repository.sh
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive
+
+      - name: Initialize Terraform only when configuration requires plugins or modules
+        shell: bash
+        run: |
+          if find . -type f -name '*.tf' -not -path './.terraform/*' -exec grep -Eq '^[[:space:]]*(provider|module|resource|data)[[:space:]]+"|required_providers[[:space:]]*=' {} +; then
+            terraform init -backend=false -input=false -no-color
+          fi
+
+      - name: Validate Terraform configuration
+        run: terraform validate -no-color
