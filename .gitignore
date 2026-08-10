@@ -27,6 +27,6 @@ terraform.rc
 # Credentials and local environment files
 *.pem
 *.key
-.env
-.env.*
 !.env.example
+config.bat
+node_modules
